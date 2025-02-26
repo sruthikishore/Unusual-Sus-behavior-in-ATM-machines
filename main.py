@@ -10,7 +10,7 @@ from ultralytics import YOLO
 
 
 # Define the new destination directory
-new_destination = "/tmp/atm_dataset"  # Example: change this to your desired path
+new_destination = "dataset"  # Example: change this to your desired path
 
 # Download the dataset to the default location
 path = kagglehub.dataset_download(
@@ -92,7 +92,6 @@ def check_suspicious_activities(detections, frame):
 
     return any(suspicious_activities.values())
 
-
 # Process each video in the dataset
 for video_file in os.listdir(videos_path):
     if video_file.endswith(('.mp4', '.avi', '.mov')):  # Check for video file extensions
@@ -135,10 +134,10 @@ for video_file in os.listdir(videos_path):
             if recording:
                 out.write(frame)
                 if time.time() - last_suspicious_time > record_duration:
-                    recording = False
+                    recording = Falsqqqe
                     out.release()
 
-            # cv2.imshow("ATM Security System", frame)
+            cv2.imshow("ATM Security System", frame)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
 
