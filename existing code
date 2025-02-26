@@ -1,0 +1,74 @@
+import cv2
+import torch
+import numpy as np
+
+model = torch.hub.load('ultralytics/yolov5', 'yolov5s') 
+
+classes_of_interest = ['person', 'hand', 'weapon', 'card', 'phone', 'wallet']
+
+suspicious_activities = {
+    'touching_non_screen_area': False,
+    'bringing_weapon': False,
+    'blocking_camera': False,
+}
+
+cap = cv2.VideoCapture(1,"video.mp4")  
+
+
+def check_suspicious Activities(detections, frame):
+    height, width, _ = frame.shape
+    atm_screen_area = (width // 3, height // 3, width * 2 // 3, height * 2 // 3) # region of interst in ATM screen
+    suspicious_activities['touching_non_screen_area'] = False
+    suspicious_activities['bringing_weapon'] = False
+    suspicious_activities['blocking_camera'] = False
+
+    for detection in detections:
+        label = detection['label']
+        bbox = detection['bbox']
+        x1, y1, x2, y2 = bbox
+
+        if label == 'hand':
+            if not (atm_screen_area[0] < (x1 + x2) / 2 < atm_screen_area[2] and atm_screen_area[1] < (y1 + y2) / 2 < atm_screen_area[3]):
+                suspicious_activities['touching_non_screen_area'] = True
+
+        # Check if weapon is detected
+        if label == 'weapon':
+            suspicious_activities['bringing_weapon'] = True
+
+        if label == 'person' and y1 < height // 4:
+            suspicious_activities['blocking_camera'] = True
+
+    return suspicious_activities
+
+
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        break
+
+    results = model(frame)
+    detections = results.pandas().xyxy[0].to_dict(orient="records")
+
+    # Draw bounding boxes and labels
+    for detection in detections:
+        label = detection['name']
+        confidence = detection['confidence']
+        bbox = [int(x) for x in detection['xmin'], detection['ymin'], detection['xmax'], detection['ymax']]
+        x1, y1, x2, y2 = bbox
+
+        if label in classes_of_interest:
+            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+            cv2.putText(frame, f"{label}: {confidence:.2f}", (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+
+    suspicious_activities = check_suspicious_activities(detections, frame)
+
+    if any(suspicious_activities.values()):
+        cv2.putText(frame, "DANGER", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+
+    cv2.imshow("ATM Security System", frame)
+
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+cap.release()
+cv2.destroyAllWindows()
