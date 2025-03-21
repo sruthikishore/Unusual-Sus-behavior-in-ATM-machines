@@ -4,14 +4,14 @@ Unusual-Sus-behavior-in-ATM-machines
 This project is designed to detect unusual activities inside ATMs using deep learning and computer vision. The system utilizes the YOLOv8 object detection model to monitor ATM surveillance videos and detect suspicious behavior such as unauthorized access, weapon detection, and attempts to block security cameras.
 
 **Dataset**
-        > We used the ATMA-V Dataset, which contains surveillance footage of ATM activities. 
-        > The dataset includes various video files featuring normal and suspicious activities.
+We used the ATMA-V Dataset, which contains surveillance footage of ATM activities. 
+The dataset includes various video files featuring normal and suspicious activities.
 
 **Tools & Technologies Used**
-        > Programming Language: Python
-        > Deep Learning Framework: YOLOv8 (Ultralytics)
-        > Computer Vision Library: OpenCV
-        > Libraries Used:
+        Programming Language: Python
+        Deep Learning Framework: YOLOv8 (Ultralytics)
+        Computer Vision Library: OpenCV
+        Libraries Used:
                    kagglehub
                    cv2
                    torch
